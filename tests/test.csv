@@ -1,0 +1,6 @@
+ID,name,height,class,class_text,switch,target
+11,Carl,1.3,2,S,TRUE,
+12,Harold,22,3,C,FALSE,
+13,Henry,33.4,1,B,TRUE,
+14,Ian,53.2,3,S,TRUE,
+15,,,,,,
