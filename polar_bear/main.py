@@ -6,17 +6,44 @@ int_dtype_list = ['int8', 'int16', 'int32',
 float_dtype_list = ['float16', 'float32', 'float64', 'float128']
 
 
+def _target_data(train_df: pd.DataFrame, target_col: str) -> pd.DataFrame:
+    """Get target column and data from train data
+
+    Extended description of function.
+
+    Parameters
+    ----------
+    train_df : pd.DataFrame
+        train data
+    target_col : str
+        target column name
+
+    Returns
+    -------
+    pd.DataFrame
+
+    >>> import pandas as pd
+    >>> data = pd.DataFrame({"param": [1, 2, 3], "target": [1, 0, 1]})
+    >>> _target_data(data, "target")
+       y1:target
+    0          1
+    1          0
+    2          1
+    """
+    target_df = pd.DataFrame()
+    target_df["y1:" + target_col] = train_df[target_col]
+    return target_df
+
+
 def clean(train_df, test_df, target_col, threshold_one_hot=0.1):
     return_df = pd.DataFrame()
     rows_count = len(train_df) + len(test_df)
     feature_column_index = 1
 
-    for label, content in train_df.iteritems():
-        if label == target_col:
-            target_df = pd.DataFrame()
-            target_df["y1:" + label] = content
-            continue
+    target_df = _target_data(train_df, target_col)
+    del train_df[target_col]
 
+    for label, content in train_df.iteritems():
         content = pd.concat([content, test_df[label]])
         dtype = content.dtype
 
