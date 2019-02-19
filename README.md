@@ -3,5 +3,4 @@
 
 :panda_face: -> cleansing -> polar bear!! ʕ·ᴥ·　ʔ
 
-## License
-MIT
+[![MIT License](http://img.shields.io/badge/license-MIT-blue.svg?style=flat)](https://github.com/regonn/polar_bear/blob/master/LICENSE.txt)
