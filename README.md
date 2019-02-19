@@ -4,3 +4,7 @@
 :panda_face: -> cleansing -> polar bear!! ʕ·ᴥ·　ʔ
 
 [![MIT License](http://img.shields.io/badge/license-MIT-blue.svg?style=flat)](https://github.com/regonn/polar_bear/blob/master/LICENSE.txt)
+
+Get Started
+--------------
+- [Tutorial Notebook](https://github.com/regonn/polar_bear/blob/master/examples/polar_bear_tutorials.ipynb)
