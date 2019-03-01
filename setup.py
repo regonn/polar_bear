@@ -14,6 +14,19 @@ from os import path
 # Python 3 only projects can skip this import
 from io import open
 
+
+def get_version():
+    # type: () -> str
+
+    version_filepath = path.join(path.dirname(
+        __file__), 'polar_bear', 'version.py')
+    with open(version_filepath) as f:
+        for line in f:
+            if line.startswith('__version__'):
+                return line.strip().split()[-1][1:-1]
+    assert False
+
+
 here = path.abspath(path.dirname(__file__))
 
 # Get the long description from the README file
@@ -43,7 +56,7 @@ setup(
     # For a discussion on single-sourcing the version across setup.py and the
     # project code, see
     # https://packaging.python.org/en/latest/single_source_version.html
-    version='0.0.5',  # Required
+    version=get_version(),  # Required
 
     # This is a one-line description or tagline of what your project does. This
     # corresponds to the "Summary" metadata field:
