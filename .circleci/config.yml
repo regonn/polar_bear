@@ -1,0 +1,12 @@
+version: 2
+jobs:
+  build:
+    docker:
+      - image: circleci/python:3.7
+    steps:
+      - checkout
+      - run: python -m venv venv || virtualenv venv
+      - run: . venv/bin/activate
+      - run: python setup.py sdist
+      - run: sudo pip install numpy pandas sklearn optuna
+      - run: python -m unittest discover tests
