@@ -8,7 +8,7 @@ from sklearn.model_selection import train_test_split
 
 int_dtype_list = ['int8', 'int16', 'int32',
                   'int64', 'uint8', 'uint16', 'uint32', 'uint64']
-float_dtype_list = ['float16', 'float32', 'float64', 'float128']
+float_dtype_list = ['float16', 'float32', 'float64']
 
 
 def _target_data(train_df: pd.DataFrame, target_col: str) -> pd.DataFrame:
