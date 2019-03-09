@@ -38,3 +38,11 @@ class TestPolarBear(TestCase):
         self.assertEqual(len(cleaned_train_df.columns),
                          len(cleaned_test_df.columns))
         self.assertEqual(target_df.columns[0], "y1:" + target_col)
+
+    def test_ludwig(self):
+        train_df = pd.read_csv('tests/train.csv')
+
+        model_definition = pb.make_model_definition_for_ludwig(
+            train_df, 'target')
+        self.assertEqual(model_definition, {'output_features': [{'name': 'target', 'type': 'binary'}], 'input_features': [{'name': 'height', 'type': 'numerical'}, {
+                         'name': 'class', 'type': 'numerical'}, {'name': 'class_text', 'type': 'category'}, {'name': 'switch', 'type': 'category'}]})
