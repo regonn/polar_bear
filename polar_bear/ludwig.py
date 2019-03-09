@@ -29,7 +29,6 @@ def make_model_definition_for_ludwig(df, target_col, threshold_category_rate=0.3
     input_features = []
     rows_count = len(df)
     target_df = df[target_col]
-    del df[target_col]
 
     return_dict['output_features'] = [
         {'name': target_col, 'type': _detect_type(target_df, threshold_category_rate)}]
@@ -38,7 +37,7 @@ def make_model_definition_for_ludwig(df, target_col, threshold_category_rate=0.3
         value_counts = content.value_counts()
         value_counts_number = value_counts.shape[0]
 
-        if (value_counts_number == 1) or (value_counts_number == rows_count):
+        if (value_counts_number == 1) or (value_counts_number == rows_count) or (label == target_col):
             continue
 
         if (content.dtype == 'object') and (value_counts_number > (rows_count * threshold_category_rate)):
