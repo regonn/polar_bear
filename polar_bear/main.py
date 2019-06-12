@@ -40,54 +40,60 @@ def _target_data(train_df: pd.DataFrame, target_col: str) -> pd.DataFrame:
     return target_df
 
 
+def convert_series(series, threshold_one_hot=0.3):
+    dtype = series.dtype
+    value_counts = series.value_counts()
+    value_counts_number = value_counts.shape[0]
+    rows_count = len(series)
+    return_df = pd.DataFrame()
+
+    if dtype in int_dtype_list:
+        if value_counts_number < (rows_count * threshold_one_hot):
+            mode_value = value_counts.index[0]
+            series[np.isnan(series)] = mode_value
+            one_hot_df = pd.get_dummies(series, prefix=series.name)
+            for one_hot_label, one_hot_content in one_hot_df.iteritems():
+                return_df[one_hot_label] = one_hot_content
+    elif dtype in float_dtype_list:
+        if value_counts_number < (rows_count * threshold_one_hot):
+            mode_value = series.value_counts().index[0]
+            series[np.isnan(series)] = mode_value
+            one_hot_df = pd.get_dummies(series, prefix=series.name)
+            for one_hot_label, one_hot_content in one_hot_df.iteritems():
+                return_df[one_hot_label] = one_hot_content
+        else:
+            mean = series.mean()
+            series[np.isnan(series)] = mean
+            return_df[series.name + "_float"] = series
+    elif (dtype == 'object') or (dtype == 'bool'):
+        if value_counts_number < (rows_count * threshold_one_hot):
+            mode_value = series.value_counts().index[0]
+            series[pd.isnull(series)] = mode_value
+            one_hot_df = pd.get_dummies(series, prefix=series.name)
+            for one_hot_label, one_hot_content in one_hot_df.iteritems():
+                return_df[one_hot_label] = one_hot_content
+    return return_df
+
+
 def _make_return_df(train_df, test_df, threshold_one_hot):
     return_df = pd.DataFrame()
-    rows_count = len(train_df) + len(test_df)
     feature_column_index = 1
 
-    for label, content in train_df.iteritems():
-        content = pd.concat([content, test_df[label]])
-        dtype = content.dtype
+    for label, series in train_df.iteritems():
+        series = pd.concat([series, test_df[label]])
 
-        value_counts = content.value_counts()
+        value_counts = series.value_counts()
         value_counts_number = value_counts.shape[0]
 
         if value_counts_number == 1:
             continue
 
-        if dtype in int_dtype_list:
-            if value_counts_number < (rows_count * threshold_one_hot):
-                mode_value = value_counts.index[0]
-                content[np.isnan(content)] = mode_value
-                one_hot_df = pd.get_dummies(content, prefix=label)
-                for one_hot_label, one_hot_content in one_hot_df.iteritems():
-                    return_df["x" + str(feature_column_index) +
-                              ":" + one_hot_label] = one_hot_content
-                    feature_column_index += 1
-        elif dtype in float_dtype_list:
-            if value_counts_number < (rows_count * threshold_one_hot):
-                mode_value = content.value_counts().index[0]
-                content[np.isnan(content)] = mode_value
-                one_hot_df = pd.get_dummies(content, prefix=label)
-                for one_hot_label, one_hot_content in one_hot_df.iteritems():
-                    return_df["x" + str(feature_column_index) +
-                              ":" + one_hot_label] = one_hot_content
-                    feature_column_index += 1
-            else:
-                mean = content.mean()
-                content[np.isnan(content)] = mean
-                return_df["x" + str(feature_column_index) +
-                          ":" + label + "_float"] = content
-                feature_column_index += 1
-        elif (dtype == 'object') or (dtype == 'bool'):
-            if value_counts_number < (rows_count * threshold_one_hot):
-                mode_value = content.value_counts().index[0]
-                content[pd.isnull(content)] = mode_value
-                one_hot_df = pd.get_dummies(content, prefix=label)
-                for one_hot_label, one_hot_content in one_hot_df.iteritems():
-                    return_df["x" + str(feature_column_index) +
-                              ":" + one_hot_label] = one_hot_content
-                    feature_column_index += 1
+        converted_df = convert_series(series, threshold_one_hot)
+
+        for converted_label, converted_content in converted_df.iteritems():
+            return_df["x" + str(feature_column_index)
+                      + ":" + converted_label] = converted_content
+            feature_column_index += 1
 
     return return_df
 
