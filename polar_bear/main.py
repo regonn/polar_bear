@@ -75,17 +75,20 @@ def convert_series(series: pd.Series, threshold_one_hot=0.3) -> pd.DataFrame:
     return return_df
 
 
-def _make_return_df(train_df, test_df, target_col, threshold_one_hot):
+def _make_return_df(train_df, test_df, target_col, threshold_one_hot) -> pd.DataFrame:
     return_df = pd.DataFrame()
     feature_column_index = 1
 
     for label, series in train_df.iteritems():
+        if (label == target_col):
+            continue
+
         series = pd.concat([series, test_df[label]])
 
         value_counts = series.value_counts()
         value_counts_number = value_counts.shape[0]
 
-        if (value_counts_number == 1) or (label == target_col):
+        if (value_counts_number == 1):
             continue
 
         converted_df = convert_series(series, threshold_one_hot)
