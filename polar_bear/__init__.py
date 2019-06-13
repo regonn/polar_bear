@@ -3,7 +3,6 @@ from polar_bear.ludwig import *
 from polar_bear.version import __version__
 
 __copyright__ = 'Copyright (C) 2019 regonn'
-__version__ = '0.0.9'
 __license__ = 'MIT'
 __author__ = 'regonn'
 __author_email__ = 'regonn@haizine.art'
