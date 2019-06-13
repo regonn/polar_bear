@@ -1,9 +1,8 @@
 import numpy as np
 import pandas as pd
 import optuna
-from sklearn.ensemble import RandomForestClassifier
-from sklearn.ensemble import RandomForestRegressor
-from sklearn.metrics import accuracy_score
+import sklearn.ensemble as ensemble
+import sklearn.metrics as metrics
 from sklearn.model_selection import train_test_split
 
 int_dtype_list = ['int8', 'int16', 'int32',
@@ -103,25 +102,30 @@ def _make_return_df(train_df, test_df, target_col, threshold_one_hot) -> pd.Data
 
 def _wrapper_objective(train_df, target_series, target_col, test_df):
     target_dtype = target_series.dtype
+    n_estimators = 10
     if target_dtype in float_dtype_list:
         if target_series.value_counts().shape[0] < 10:
-            rf = RandomForestClassifier()
+            rf = ensemble.RandomForestClassifier(n_estimators=n_estimators)
+            rf_type = 'classifier'
         else:
-            rf = RandomForestRegressor()
+            rf = ensemble.RandomForestRegressor(n_estimators=n_estimators)
+            rf_type = 'regressor'
     else:
-        rf = RandomForestClassifier()
+        rf = ensemble.RandomForestClassifier(n_estimators=n_estimators)
+        rf_type = 'classifier'
 
     def objective(trial):
-        threshold_one_hot = trial.suggest_discrete_uniform(
-            'threshold_one_hot', 0.0, 1, 0.01)
+        threshold_one_hot = trial.suggest_int('threshold_one_hot', 0, 100) * 0.01
         return_df = _make_return_df(
             train_df, test_df, target_col, threshold_one_hot)
         X_train, X_test, y_train, y_test = train_test_split(
             return_df[0:len(train_df)].values, target_series.values, test_size=0.2, random_state=0)
         rf.fit(X_train, y_train)
         y_pred = rf.predict(X_test)
-        print(y_pred)
-        return 1.0 - accuracy_score(y_test, y_pred)
+        if rf_type == 'classifier':
+            return 1.0 - metrics.accuracy_score(y_test, y_pred)
+        if rf_type == 'regressor':
+            return 1.0 - metrics.r2_score(y_test, y_pred)
     return objective
 
 
@@ -131,9 +135,9 @@ def clean(train_df, test_df, target_col, threshold_one_hot=None):
     if threshold_one_hot is None:
         study = optuna.create_study()
         study.optimize(_wrapper_objective(
-            train_df, target_series, target_col, test_df), 100)
+            train_df, target_series, target_col, test_df), n_trials=100, timeout=10*60)
         return_df = _make_return_df(
-            train_df, test_df, target_col, study.best_params['threshold_one_hot'])
+            train_df, test_df, target_col, study.best_params['threshold_one_hot'] * 0.01)
     else:
         return_df = _make_return_df(
             train_df, test_df, target_col, threshold_one_hot)

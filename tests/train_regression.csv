@@ -1,0 +1,11 @@
+ID,name,height,class,class_text,switch,same_value,target
+1,Adam,10.4,1,S,true,foo,4.3
+2,Alan,20,2,C,false,foo,1.5
+3,Albert,100.5,3,B,true,foo,5.2
+4,Alfred,11,1,B,false,foo,2.4
+5,Andy,22,2,C,true,foo,1.1
+6,Chris,34,3,B,false,foo,0.9
+7,Dave,31,3,S,true,foo,8.0
+8,Elvis,3,2,C,false,foo,2.3
+9,Eric,11,3,B,true,foo,1.0
+10,Gene,,,,,foo,0.0

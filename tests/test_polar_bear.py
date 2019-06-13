@@ -1,12 +1,12 @@
 # the inclusion of the tests module is not meant to offer best practices for
 # testing in general, but rather to support the `find_packages` example in
 # setup.py that excludes installing the "tests" package
-from unittest import TestCase
+import unittest
 import polar_bear as pb
 import pandas as pd
 
 
-class TestPolarBear(TestCase):
+class TestPolarBear(unittest.TestCase):
     def test_clean(self):
         train_df = pd.read_csv('tests/train.csv')
         test_df = pd.read_csv('tests/test.csv')
@@ -32,8 +32,20 @@ class TestPolarBear(TestCase):
         self.assertListEqual(cleaned_test_df.columns.to_list(),
                              expected_test_df.columns.to_list())
 
-    def test_clean_optuna(self):
+    def test_clean_optuna_classifier(self):
         train_df = pd.read_csv('tests/train.csv')
+        test_df = pd.read_csv('tests/test.csv')
+        target_col = 'target'
+        cleaned_train_df, target_series, cleaned_test_df = pb.clean(
+            train_df, test_df, target_col)
+        self.assertEqual(len(cleaned_test_df.dropna()), len(test_df))
+        self.assertEqual(len(cleaned_train_df), len(target_series))
+        self.assertEqual(len(cleaned_train_df.columns),
+                         len(cleaned_test_df.columns))
+        self.assertEqual(target_series.name, "y1:" + target_col)
+
+    def test_clean_optuna_regressor(self):
+        train_df = pd.read_csv('tests/train_regression.csv')
         test_df = pd.read_csv('tests/test.csv')
         target_col = 'target'
         cleaned_train_df, target_series, cleaned_test_df = pb.clean(
@@ -51,3 +63,6 @@ class TestPolarBear(TestCase):
             train_df, 'target')
         self.assertEqual(model_definition, {'output_features': [{'name': 'target', 'type': 'binary'}], 'input_features': [{'name': 'height', 'type': 'numerical'}, {
                          'name': 'class', 'type': 'numerical'}, {'name': 'class_text', 'type': 'category'}, {'name': 'switch', 'type': 'category'}]})
+
+if __name__ == '__main__':
+    unittest.main()
