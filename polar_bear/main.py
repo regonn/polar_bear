@@ -11,7 +11,7 @@ int_dtype_list = ['int8', 'int16', 'int32',
 float_dtype_list = ['float16', 'float32', 'float64']
 
 
-def _target_data(train_df: pd.DataFrame, target_col: str) -> pd.DataFrame:
+def _target_data(train_df: pd.DataFrame, target_col: str) -> pd.Series:
     """Get target column and data from train data
 
     Extended description of function.
@@ -25,7 +25,7 @@ def _target_data(train_df: pd.DataFrame, target_col: str) -> pd.DataFrame:
 
     Returns
     -------
-    pd.DataFrame
+    pd.Series
 
     >>> import pandas as pd
     >>> data = pd.DataFrame({"param": [1, 2, 3], "target": [1, 0, 1]})
@@ -35,12 +35,12 @@ def _target_data(train_df: pd.DataFrame, target_col: str) -> pd.DataFrame:
     1          0
     2          1
     """
-    target_df = pd.DataFrame()
-    target_df["y1:" + target_col] = train_df[target_col]
-    return target_df
+    target_series = train_df[target_col]
+    target_series.name = "y1:" + target_col
+    return target_series
 
 
-def convert_series(series, threshold_one_hot=0.3):
+def convert_series(series: pd.Series, threshold_one_hot=0.3) -> pd.DataFrame:
     dtype = series.dtype
     value_counts = series.value_counts()
     value_counts_number = value_counts.shape[0]
@@ -75,7 +75,7 @@ def convert_series(series, threshold_one_hot=0.3):
     return return_df
 
 
-def _make_return_df(train_df, test_df, threshold_one_hot):
+def _make_return_df(train_df, test_df, target_col, threshold_one_hot):
     return_df = pd.DataFrame()
     feature_column_index = 1
 
@@ -85,7 +85,7 @@ def _make_return_df(train_df, test_df, threshold_one_hot):
         value_counts = series.value_counts()
         value_counts_number = value_counts.shape[0]
 
-        if value_counts_number == 1:
+        if (value_counts_number == 1) or (label == target_col):
             continue
 
         converted_df = convert_series(series, threshold_one_hot)
@@ -98,10 +98,10 @@ def _make_return_df(train_df, test_df, threshold_one_hot):
     return return_df
 
 
-def _wrapper_objective(train_df, target_df, test_df):
-    target_dtype = target_df.dtypes[0]
+def _wrapper_objective(train_df, target_series, target_col, test_df):
+    target_dtype = target_series.dtype
     if target_dtype in float_dtype_list:
-        if target_df.iloc[:, 0].value_counts().shape[0] < 10:
+        if target_series.value_counts().shape[0] < 10:
             rf = RandomForestClassifier()
         else:
             rf = RandomForestRegressor()
@@ -110,10 +110,11 @@ def _wrapper_objective(train_df, target_df, test_df):
 
     def objective(trial):
         threshold_one_hot = trial.suggest_discrete_uniform(
-            'threshold_one_hot', 0.0, 1.0, 0.01)
-        return_df = _make_return_df(train_df, test_df, threshold_one_hot)
+            'threshold_one_hot', 0.0, 1, 0.01)
+        return_df = _make_return_df(
+            train_df, test_df, target_col, threshold_one_hot)
         X_train, X_test, y_train, y_test = train_test_split(
-            return_df[0:len(train_df)].values, target_df.iloc[:, 0].values, test_size=0.2, random_state=0)
+            return_df[0:len(train_df)].values, target_series.values, test_size=0.2, random_state=0)
         rf.fit(X_train, y_train)
         y_pred = rf.predict(X_test)
         print(y_pred)
@@ -122,15 +123,16 @@ def _wrapper_objective(train_df, target_df, test_df):
 
 
 def clean(train_df, test_df, target_col, threshold_one_hot=None):
-    target_df = _target_data(train_df, target_col)
-    del train_df[target_col]
+    target_series = _target_data(train_df, target_col)
 
     if threshold_one_hot is None:
         study = optuna.create_study()
-        study.optimize(_wrapper_objective(train_df, target_df, test_df), 100)
+        study.optimize(_wrapper_objective(
+            train_df, target_series, target_col, test_df), 100)
         return_df = _make_return_df(
-            train_df, test_df, study.best_params['threshold_one_hot'])
+            train_df, test_df, target_col, study.best_params['threshold_one_hot'])
     else:
-        return_df = _make_return_df(train_df, test_df, threshold_one_hot)
+        return_df = _make_return_df(
+            train_df, test_df, target_col, threshold_one_hot)
 
-    return return_df[0:len(train_df)], target_df, return_df[len(train_df):]
+    return return_df[0:len(train_df)], target_series, return_df[len(train_df):]
