@@ -39,7 +39,7 @@ def _target_data(train_df: pd.DataFrame, target_col: str) -> pd.Series:
     return target_series
 
 
-def convert_series(train_series: pd.Series, test_series: pd.Series, threshold_one_hot=0.3):
+def convert_series(train_series: pd.Series, test_series: pd.Series, threshold_one_hot=0.3, include_dummy_na=False):
     series = pd.concat([train_series, test_series])
     dtype = series.dtype
     value_counts = series.value_counts()
@@ -49,16 +49,18 @@ def convert_series(train_series: pd.Series, test_series: pd.Series, threshold_on
 
     if dtype in int_dtype_list:
         if value_counts_number < (rows_count * threshold_one_hot):
-            mode_value = value_counts.index[0]
-            series[np.isnan(series)] = mode_value
-            one_hot_df = pd.get_dummies(series, prefix=series.name)
+            if not include_dummy_na:
+                mode_value = value_counts.index[0]
+                series[np.isnan(series)] = mode_value
+            one_hot_df = pd.get_dummies(series, prefix=series.name, dummy_na=include_dummy_na)
             for one_hot_label, one_hot_content in one_hot_df.iteritems():
                 return_df[one_hot_label] = one_hot_content
     elif dtype in float_dtype_list:
         if value_counts_number < (rows_count * threshold_one_hot):
-            mode_value = series.value_counts().index[0]
-            series[np.isnan(series)] = mode_value
-            one_hot_df = pd.get_dummies(series, prefix=series.name)
+            if not include_dummy_na:
+                mode_value = series.value_counts().index[0]
+                series[np.isnan(series)] = mode_value
+            one_hot_df = pd.get_dummies(series, prefix=series.name, dummy_na=include_dummy_na)
             for one_hot_label, one_hot_content in one_hot_df.iteritems():
                 return_df[one_hot_label] = one_hot_content
         else:
@@ -67,9 +69,10 @@ def convert_series(train_series: pd.Series, test_series: pd.Series, threshold_on
             return_df[series.name + "_float"] = series
     elif (dtype == 'object') or (dtype == 'bool'):
         if value_counts_number < (rows_count * threshold_one_hot):
-            mode_value = series.value_counts().index[0]
-            series[pd.isnull(series)] = mode_value
-            one_hot_df = pd.get_dummies(series, prefix=series.name)
+            if not include_dummy_na:
+                mode_value = series.value_counts().index[0]
+                series[pd.isnull(series)] = mode_value
+            one_hot_df = pd.get_dummies(series, prefix=series.name, dummy_na=include_dummy_na)
             for one_hot_label, one_hot_content in one_hot_df.iteritems():
                 return_df[one_hot_label] = one_hot_content
     return return_df[0:len(train_series)], return_df[len(train_series):]
