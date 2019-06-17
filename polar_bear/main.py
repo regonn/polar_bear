@@ -4,10 +4,32 @@ import optuna
 import sklearn.ensemble as ensemble
 import sklearn.metrics as metrics
 from sklearn.model_selection import train_test_split
+from itertools import chain
 
 int_dtype_list = ['int8', 'int16', 'int32',
                   'int64', 'uint8', 'uint16', 'uint32', 'uint64']
 float_dtype_list = ['float16', 'float32', 'float64']
+
+
+def convert_multi_category(train_df, test_df, split=','):
+    df = pd.concat([train_df, test_df])
+
+
+    columns = set(list(chain.from_iterable(df.apply(pd.value_counts).index.str.split(split).to_list())))
+
+    column_names = list(map(lambda x: 'label_' + x, columns))
+    return_df = pd.DataFrame(columns=column_names)
+    print(column_names)
+
+    for _, row in df.iterrows():
+        unique_values = list(chain.from_iterable(pd.Series(row).dropna().str.split(split).to_list()))
+        row_df = pd.DataFrame()
+        for column in columns:
+            row_df['label_' + column] = [1] if (column in unique_values) else [0]
+        return_df = return_df.append(row_df)
+
+
+    return return_df[0:len(train_df)], return_df[len(train_df):]
 
 
 def _target_data(train_df: pd.DataFrame, target_col: str) -> pd.Series:
@@ -52,7 +74,8 @@ def convert_series(train_series: pd.Series, test_series: pd.Series, threshold_on
             if not include_dummy_na:
                 mode_value = value_counts.index[0]
                 series[np.isnan(series)] = mode_value
-            one_hot_df = pd.get_dummies(series, prefix=series.name, dummy_na=include_dummy_na)
+            one_hot_df = pd.get_dummies(
+                series, prefix=series.name, dummy_na=include_dummy_na)
             for one_hot_label, one_hot_content in one_hot_df.iteritems():
                 return_df[one_hot_label] = one_hot_content
     elif dtype in float_dtype_list:
@@ -60,7 +83,8 @@ def convert_series(train_series: pd.Series, test_series: pd.Series, threshold_on
             if not include_dummy_na:
                 mode_value = series.value_counts().index[0]
                 series[np.isnan(series)] = mode_value
-            one_hot_df = pd.get_dummies(series, prefix=series.name, dummy_na=include_dummy_na)
+            one_hot_df = pd.get_dummies(
+                series, prefix=series.name, dummy_na=include_dummy_na)
             for one_hot_label, one_hot_content in one_hot_df.iteritems():
                 return_df[one_hot_label] = one_hot_content
         else:
@@ -72,7 +96,8 @@ def convert_series(train_series: pd.Series, test_series: pd.Series, threshold_on
             if not include_dummy_na:
                 mode_value = series.value_counts().index[0]
                 series[pd.isnull(series)] = mode_value
-            one_hot_df = pd.get_dummies(series, prefix=series.name, dummy_na=include_dummy_na)
+            one_hot_df = pd.get_dummies(
+                series, prefix=series.name, dummy_na=include_dummy_na)
             for one_hot_label, one_hot_content in one_hot_df.iteritems():
                 return_df[one_hot_label] = one_hot_content
     return return_df[0:len(train_series)], return_df[len(train_series):]

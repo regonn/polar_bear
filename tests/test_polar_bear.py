@@ -7,6 +7,16 @@ import pandas as pd
 
 
 class TestPolarBear(unittest.TestCase):
+    def test_convert_multi_category(self):
+        train_df = pd.read_csv('tests/train.csv')
+        test_df = pd.read_csv('tests/test.csv')
+        target_columns = ['multi_label1', 'multi_label2', 'multi_label3']
+        target_train_df = train_df[target_columns]
+        target_test_df = test_df[target_columns]
+
+        converted_multi_train_df, converted_multi_test_df = pb.convert_multi_category(target_train_df, target_test_df)
+        print(converted_multi_train_df)
+        print(converted_multi_test_df)
 
     def test_convert_series(self):
         train_df = pd.read_csv('tests/train.csv')

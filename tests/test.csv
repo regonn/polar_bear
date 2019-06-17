@@ -1,6 +1,6 @@
-ID,name,height,class,class_text,switch,same_value
-11,Carl,1.3,2,S,TRUE,foo
-12,Harold,22,3,C,FALSE,foo
-13,Henry,33.4,1,B,TRUE,foo
-14,Ian,53.2,3,S,TRUE,foo
-15,,,,,,foo
+ID,name,height,class,class_text,switch,same_value,multi_label1,multi_label2,multi_label3
+11,Carl,1.3,2,S,TRUE,foo,five,,one
+12,Harold,22,3,C,FALSE,foo,"five",,
+13,Henry,33.4,1,B,TRUE,foo,one,two,three
+14,Ian,53.2,3,S,TRUE,foo,one,"two,three",
+15,,,,,,foo,,,
