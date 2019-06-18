@@ -1,11 +1,11 @@
-ID,name,height,class,class_text,switch,same_value,target,multi_label1,multi_label2,multi_label3
-1,Adam,10.4,1,S,true,foo,1,,,"one,two"
-2,Alan,20,2,C,false,foo,0,one,,three
-3,Albert,100.5,3,B,true,foo,0,three,,
-4,Alfred,11,1,B,false,foo,1,,,one
-5,Andy,22,2,C,true,foo,0,two,one,
-6,Chris,34,3,B,false,foo,1,one,two,three
-7,Dave,31,3,S,true,foo,0,three,two,one
-8,Elvis,3,2,C,false,foo,0,,,
-9,Eric,11,3,B,true,foo,1,"three",,
-10,Gene,,,,,foo,0,,four,
+ID,name,height,class,class_text,switch,same_value,target,multi_label1,multi_label2,multi_label3,multi_label_independed
+1,Adam,10.4,1,S,true,foo,1,,,"one, two","ichi"
+2,Alan,20,2,C,false,foo,0,one,,three,
+3,Albert,100.5,3,B,true,foo,0,three,,,"ichi, ni"
+4,Alfred,11,1,B,false,foo,1,,,one,san
+5,Andy,22,2,C,true,foo,0,two,one,,
+6,Chris,34,3,B,false,foo,1,one,two,three,ichi
+7,Dave,31,3,S,true,foo,0,three,two,one,ni
+8,Elvis,3,2,C,false,foo,0,,,,"go, yon"
+9,Eric,11,3,B,true,foo,1,"three",,,"go"
+10,Gene,,,,,foo,0,,four,,

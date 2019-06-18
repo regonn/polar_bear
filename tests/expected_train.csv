@@ -1,11 +1,11 @@
-x1:height_float,x2:class_1.0,x3:class_2.0,x4:class_3.0,x5:class_text_B,x6:class_text_C,x7:class_text_S,x8:switch_False,x9:switch_True
-10.4,1,0,0,0,0,1,0,1
-20.0,0,1,0,0,1,0,1,0
-100.5,0,0,1,1,0,0,0,1
-11.0,1,0,0,1,0,0,1,0
-22.0,0,1,0,0,1,0,0,1
-34.0,0,0,1,1,0,0,1,0
-31.0,0,0,1,0,0,1,0,1
-3.0,0,1,0,0,1,0,1,0
-11.0,0,0,1,1,0,0,0,1
-27.138461538461538,0,0,1,1,0,0,0,1
+x1:height_float,x2:class_1.0,x3:class_2.0,x4:class_3.0,x5:class_text_B,x6:class_text_C,x7:class_text_S,x8:switch_False,x9:switch_True,x10:multi_label1_five,x11:multi_label1_one,x12:multi_label1_three,x13:multi_label1_two,x14:multi_label2_four,x15:multi_label2_one,x16:multi_label2_two,"x17:multi_label2_two, three",x18:multi_label3_one,"x19:multi_label3_one, two",x20:multi_label3_three,x21:multi_label_independed_go,"x22:multi_label_independed_go, yon",x23:multi_label_independed_ichi,"x24:multi_label_independed_ichi, ni",x25:multi_label_independed_ni,x26:multi_label_independed_san,x27:multi_label_independed_yon
+10.4,1,0,0,0,0,1,0,1,0,1,0,0,0,0,1,0,0,1,0,0,0,1,0,0,0,0
+20.0,0,1,0,0,1,0,1,0,0,1,0,0,0,0,1,0,0,0,1,0,0,1,0,0,0,0
+100.5,0,0,1,1,0,0,0,1,0,0,1,0,0,0,1,0,1,0,0,0,0,0,1,0,0,0
+11.0,1,0,0,1,0,0,1,0,0,1,0,0,0,0,1,0,1,0,0,0,0,0,0,0,1,0
+22.0,0,1,0,0,1,0,0,1,0,0,0,1,0,1,0,0,1,0,0,0,0,1,0,0,0,0
+34.0,0,0,1,1,0,0,1,0,0,1,0,0,0,0,1,0,0,0,1,0,0,1,0,0,0,0
+31.0,0,0,1,0,0,1,0,1,0,0,1,0,0,0,1,0,1,0,0,0,0,0,0,1,0,0
+3.0,0,1,0,0,1,0,1,0,0,1,0,0,0,0,1,0,1,0,0,0,1,0,0,0,0,0
+11.0,0,0,1,1,0,0,0,1,0,0,1,0,0,0,1,0,1,0,0,1,0,0,0,0,0,0
+27.138461538461538,0,0,1,1,0,0,0,1,0,1,0,0,1,0,0,0,1,0,0,0,0,1,0,0,0,0
