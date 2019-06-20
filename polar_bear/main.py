@@ -20,7 +20,7 @@ def convert_multi_category(train_df, test_df, split=','):
     striped_values = pd.Series(
         list(chain.from_iterable(splited_values.to_list()))).str.strip()
 
-    columns = set(striped_values)
+    columns = sorted(set(striped_values))
 
     column_names = list(map(lambda x: 'label_' + x, columns))
     return_df = pd.DataFrame(columns=column_names)
@@ -39,7 +39,7 @@ def convert_multi_category(train_df, test_df, split=','):
         return_df = return_df.append(row_df, ignore_index=True)
 
     return_train_df = return_df[0:len(train_df)]
-    return_test_df = return_df[len(train_df):].reset_index()
+    return_test_df = return_df[len(train_df):].reset_index(drop=True)
 
     return return_train_df, return_test_df
 
